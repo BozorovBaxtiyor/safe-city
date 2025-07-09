@@ -12,6 +12,18 @@ interface ExtendedConnectionOptions extends Knex.PgConnectionConfig {
     };
 }
 
+console.log(`Using database: ${process.env.DB_NAME}`);
+console.log(`Database host: ${process.env.DB_HOST}`);
+console.log(`Database port: ${process.env.DB_PORT}`);
+console.log(`Database user: ${process.env.DB_USER}`);
+console.log(`Environment: ${process.env.NODE_ENV}`);
+console.log(`Database password: ${process.env.DB_PASSWORD ? '******' : 'not set'}`);
+
+
+
+
+
+
 const knexConfig: { [key: string]: Knex.Config } = {
     development: {
         debug: true,

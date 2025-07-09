@@ -14,11 +14,16 @@
         "start:prod": "node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:cov": "jest --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "migrate:make": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:make",
+        "migrate:rollback": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:rollback",
+        "migrate:rollback:all": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:rollback --all",
+        "seed:make": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts seed:make",
+        "db:reset": "yarn migrate:rollback:all && yarn migrate:latest && yarn seed:run",
+        "migrate:lates": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:latest",
+        "seed:run": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts seed:run",
+        "test": "npx jest",
+        "test:watch": "npx jest --watch",
+        "test:cov": "jest --coverage"
     },
     "dependencies": {
         "@nestjs/common": "^11.0.1",
@@ -26,9 +31,11 @@
         "@nestjs/core": "^11.0.1",
         "@nestjs/platform-express": "^11.0.1",
         "@nestjs/swagger": "^11.2.0",
+        "bcrypt": "^6.0.0",
         "dotenv": "^16.5.0",
         "knex": "^3.1.0",
         "nestjs-knex": "^3.0.0",
+        "pg": "^8.16.3",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1"
     },
