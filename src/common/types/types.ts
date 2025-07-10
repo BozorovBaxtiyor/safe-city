@@ -4,9 +4,26 @@ export interface IUser {
     email: string;
     fullname: string;
     password: string;
-    roll: "developer" | "chef" | "lead" | "senior" | "superadmin";
+    roll: 'developer' | 'chef' | 'lead' | 'senior' | 'superadmin' | 'admin' | 'user';
     region: string;
     avatar?: string | null;
     created_at?: Date;
     updated_at?: Date;
+}
+export interface IJwtPayload {
+    id: number;
+    role: string;
+    username: string;
+    iat: number;
+    exp: number;
+}
+
+export interface ICustomRequest extends Express.Request {
+    user: IJwtPayload | IJwtRefreshPayload;
+}
+
+export interface IJwtRefreshPayload {
+    id: number;
+    iat: number;
+    exp: number;
 }
