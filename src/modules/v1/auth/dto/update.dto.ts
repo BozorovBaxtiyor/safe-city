@@ -1,9 +1,10 @@
-// update.input.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches, MinLength, IsEmail, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateProfileDto {
     @ApiProperty({ example: 2, description: 'User ID to update profile' })
+    @Type(() => Number) // String -> Number transformatsiya
     @IsNumber()
     userId: number;
 
@@ -35,12 +36,4 @@ export class UpdateProfileDto {
     })
     @IsEmail()
     email: string;
-
-    @ApiProperty({
-        type: 'string',
-        format: 'binary',
-        description: 'Profile photo (optional)',
-        required: false,
-    })
-    profilePhoto?: Express.Multer.File;
 }

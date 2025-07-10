@@ -46,6 +46,7 @@ export class AuthRepository {
             email: registerDto.email,
             password: hashedPassword,
             fullname: registerDto.fullName,
+            region: registerDto.region,
             roll: 'user',
         }); 
     }
@@ -101,8 +102,8 @@ export class AuthRepository {
         const limit = query.limit ?? 10;
         const skip = (page - 1) * limit;
         return this.knex<IUser>('users')
-            .whereNot('role', 'superadmin') 
-            .select('id', 'full_name', 'email', 'username', 'role', 'status')
+            .whereNot('roll', 'superadmin') 
+            .select('id', 'fullname', 'email', 'username', 'roll')
             .limit(limit)
             .offset(skip);
     }

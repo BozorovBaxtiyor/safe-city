@@ -31,16 +31,22 @@ import { JwtHttpAuthGuard } from 'src/common/guards/auth/http-auth.guard';
 import { JwtRefreshGuard } from 'src/common/guards/auth/jwt-refresh.guard';
 import { HttpRoleGuard } from 'src/common/guards/roles/roles.guard';
 import { ICustomRequest, IUser } from '../../../common/types/types';
-import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { PaginationQueryUsersDto } from './dto/get-all.users.input';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateProfileDto } from './dto/update.dto';
+import { ValidateOtpDto } from './dto/validate-otp.dto';
+import {
+    ForgotPasswordResponseEntity,
+    ValidateOtpResponseEntity,
+} from './entity/forgot-password.entity';
 import { GetAllUsersOutput } from './entity/get-allUsers.output';
 import { LoginEntity } from './entity/login.output';
 import { RegisterEntity } from './entity/register.output';
 import { UpdateProfileEntity } from './entity/update.output';
+import { AuthService } from './services/auth.service';
 
 @UseGuards(JwtHttpAuthGuard, HttpRoleGuard)
 @Controller('auth')
@@ -72,7 +78,7 @@ export class AuthController {
 
     @Get('users')
     @ApiOkResponse('List of users', GetAllUsersOutput)
-    async getUsers(@Query() query: PaginationQueryUsersDto): Promise<Partial<IUser>[]> {
+    async getUsers(@Query() query: PaginationQueryUsersDto): Promise<{ data: Partial<IUser>[] }> {
         return this.authService.getUsers(query);
     }
 
@@ -105,8 +111,6 @@ export class AuthController {
         return this.authService.deleteUser(id, req.user?.id);
     }
 
-   
-
     @Put('reset-password')
     @ApiBody({ type: ResetPasswordDto })
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
@@ -122,5 +126,23 @@ export class AuthController {
     @UseGuards(JwtRefreshGuard)
     async refreshToken(@Req() req: ICustomRequest): Promise<LoginEntity> {
         return this.authService.refreshToken(req.user.id);
+    }
+
+    @Post('forgot-password')
+    @Public()
+    @ApiBody({ type: ForgotPasswordDto })
+    @ApiOkResponse('OTP sent successfully', ForgotPasswordResponseEntity)
+    async forgotPassword(
+        @Body() forgotPasswordDto: ForgotPasswordDto,
+    ): Promise<ForgotPasswordResponseEntity> {
+        return this.authService.forgotPassword(forgotPasswordDto);
+    }
+
+    @Post('validate-otp')
+    @Public()
+    @ApiBody({ type: ValidateOtpDto })
+    @ApiOkResponse('Password reset successful', ValidateOtpResponseEntity)
+    async validateOtp(@Body() validateOtpDto: ValidateOtpDto): Promise<ValidateOtpResponseEntity> {
+        return this.authService.validateOtp(validateOtpDto);
     }
 }

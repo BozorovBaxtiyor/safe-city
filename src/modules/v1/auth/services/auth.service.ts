@@ -10,15 +10,23 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { JWT_ACCESS, JWT_REFRESH } from 'src/common/constants/jwt-constants';
 
-import { IUser } from '../../../common/types/types';
-import { AuthRepository } from './auth.repository';
-import { PaginationQueryUsersDto } from './dto/get-all.users.input';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
-import { UpdateProfileDto } from './dto/update.dto';
-import { LoginEntity } from './entity/login.output';
-import { RegisterEntity } from './entity/register.output';
-import { UpdateProfileEntity } from './entity/update.output';
+import { IUser } from '../../../../common/types/types';
+import { AuthRepository } from '../auth.repository';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { PaginationQueryUsersDto } from '../dto/get-all.users.input';
+import { LoginDto } from '../dto/login.dto';
+import { RegisterDto } from '../dto/register.dto';
+import { UpdateProfileDto } from '../dto/update.dto';
+import { ValidateOtpDto } from '../dto/validate-otp.dto';
+import {
+    ForgotPasswordResponseEntity,
+    ValidateOtpResponseEntity,
+} from '../entity/forgot-password.entity';
+import { LoginEntity } from '../entity/login.output';
+import { RegisterEntity } from '../entity/register.output';
+import { UpdateProfileEntity } from '../entity/update.output';
+import { CacheService } from './cache.service';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +34,8 @@ export class AuthService {
         private readonly authRepository: AuthRepository,
         @Inject(JWT_ACCESS) private readonly jwtAccess: JwtService,
         @Inject(JWT_REFRESH) private readonly jwtRefresh: JwtService,
+        private readonly cacheService: CacheService,
+        private readonly mailService: MailService,
     ) {}
 
     async login(loginDto: LoginDto): Promise<LoginEntity> {
@@ -59,8 +69,11 @@ export class AuthService {
         };
     }
 
-    async getUsers(query: PaginationQueryUsersDto): Promise<Partial<IUser>[]> {
-        return this.authRepository.getUsers(query);
+    async getUsers(query: PaginationQueryUsersDto): Promise<{ data: Partial<IUser>[] }> {
+        const users = await this.authRepository.getUsers(query);
+        return {
+            data: users,
+        };
     }
 
     async getUser(id: number): Promise<Partial<IUser>> {
@@ -192,5 +205,86 @@ export class AuthService {
         const refreshToken = await this.jwtRefresh.signAsync({ id: user.id });
 
         return { accessToken, refreshToken };
+    }
+
+    async forgotPassword(
+        forgotPasswordDto: ForgotPasswordDto,
+    ): Promise<ForgotPasswordResponseEntity> {
+        const user = await this.authRepository.findUserByUsernameOrEmail(
+            '',
+            forgotPasswordDto.email,
+        );
+
+        if (!user) {
+            throw new HttpException(
+                {
+                    status: 'error',
+                    message: 'User with this email not found',
+                },
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Save OTP to Redis cache with 5-minute expiration
+        await this.cacheService.setOtp(forgotPasswordDto.email, otp);
+
+        // Send OTP via email
+        await this.mailService.sendOtp(forgotPasswordDto.email, otp);
+
+        return {
+            message: 'Password reset OTP has been sent to your email',
+        };
+    }
+
+    async validateOtp(validateOtpDto: ValidateOtpDto): Promise<ValidateOtpResponseEntity> {
+        const { email, otp, newPassword } = validateOtpDto;
+
+        // Get stored OTP from Redis
+        const storedOtp = await this.cacheService.getOtp(email);
+
+        if (!storedOtp) {
+            throw new HttpException(
+                {
+                    status: 'error',
+                    message: 'OTP has expired',
+                },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        if (storedOtp !== otp) {
+            throw new HttpException(
+                {
+                    status: 'error',
+                    message: 'Invalid OTP',
+                },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        const user = await this.authRepository.findUserByUsernameOrEmail('', email);
+
+        if (!user) {
+            throw new HttpException(
+                {
+                    status: 'error',
+                    message: 'User not found',
+                },
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        // Update password
+        await this.authRepository.updatePasswordWithTransaction(user.id, newPassword);
+
+        // Delete OTP from cache after successful validation
+        await this.cacheService.deleteOtp(email);
+
+        return {
+            message: 'Password has been reset successfully',
+        };
     }
 }
