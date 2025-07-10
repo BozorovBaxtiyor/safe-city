@@ -19,7 +19,7 @@
         "migrate:rollback:all": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:rollback --all",
         "seed:make": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts seed:make",
         "db:reset": "yarn migrate:rollback:all && yarn migrate:latest && yarn seed:run",
-        "migrate:lates": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:latest",
+        "migrate:latest": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts migrate:latest",
         "seed:run": "ts-node --transpile-only ./node_modules/.bin/knex --knexfile src/database/knexfile.ts seed:run",
         "test": "npx jest",
         "test:watch": "npx jest --watch",

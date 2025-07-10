@@ -27,3 +27,21 @@ export interface IJwtRefreshPayload {
     iat: number;
     exp: number;
 }
+
+export interface IRegion { 
+    id: number;
+    name: string;
+    country: string;
+    description: string;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+export interface IDistrict {
+    id: number;
+    name: string;
+    description: string;
+    region_id: string;
+    created_at?: Date;
+    updated_at?: Date;
+}
