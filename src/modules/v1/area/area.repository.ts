@@ -45,13 +45,16 @@ export class AreaRepository {
     // District operations
     async createDistrict(createDistrictDto: CreateDistrictDto): Promise<IDistrict> {
         const [district] = await this.knex<IDistrict>('districts')
-            .insert(createDistrictDto)
+            .insert({
+                ...createDistrictDto,
+                region_id: createDistrictDto.region_id.toString(),
+            })
             .returning('*');
         return district;
     }
 
-    async getAllDistricts(): Promise<IDistrict[]> {
-        return this.knex<IDistrict>('districts').select('*').orderBy('name');
+    async getAllDistricts(regionId: number): Promise<IDistrict[]> {
+        return this.knex<IDistrict>('districts').where('region_id', regionId).select('*').orderBy('name');
     }
 
     async getDistrictsByRegionId(regionId: string): Promise<IDistrict[]> {

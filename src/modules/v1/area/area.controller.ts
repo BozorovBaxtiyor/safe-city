@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/common/decorators/role.decorator';
 import { UserRole } from 'src/common/enums/roles.enum';
 import { JwtHttpAuthGuard } from 'src/common/guards/auth/http-auth.guard';
@@ -36,7 +36,7 @@ export class AreaController {
     }
 
     @Get('regions')
-    async getAllRegions(): Promise<IRegion[]> {
+    async getAllRegions(): Promise<{ regions: IRegion[] }> {
         return this.areaService.getAllRegions();
     }
 
@@ -73,8 +73,9 @@ export class AreaController {
     }
 
     @Get('districts')
-    async getAllDistricts(): Promise<IDistrict[]> {
-        return this.areaService.getAllDistricts();
+    @ApiQuery({ name: 'regionId', required: false, type: 'number' })
+    async getAllDistricts(@Query('regionId') regionId: number): Promise<{ data: IDistrict[] }> {
+        return this.areaService.getAllDistricts(regionId);
     }
 
     @Get('district/:id')

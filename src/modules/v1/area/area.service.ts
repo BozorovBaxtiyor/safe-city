@@ -24,9 +24,10 @@ export class AreaService {
         }
     }
 
-    async getAllRegions(): Promise<IRegion[]> {
+    async getAllRegions(): Promise<{regions:IRegion[]}> {
         try {
-            return await this.areaRepository.getAllRegions();
+            const regions = await this.areaRepository.getAllRegions();
+            return { regions };
         } catch (error) {
             throw new HttpException('Failed to fetch regions', HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -89,9 +90,10 @@ export class AreaService {
         }
     }
 
-    async getAllDistricts(): Promise<IDistrict[]> {
+    async getAllDistricts(regionId: number): Promise<{data: IDistrict[]}> {
         try {
-            return await this.areaRepository.getAllDistricts();
+            const districts = await this.areaRepository.getAllDistricts(regionId);
+            return {data: districts};
         } catch (error) {
             throw new HttpException('Failed to fetch districts', HttpStatus.INTERNAL_SERVER_ERROR);
         }

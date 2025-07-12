@@ -3,10 +3,10 @@ import type { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
     await knex.schema.createTable('districts', table => {
         table.increments('id').primary();
-        table.string('name').notNullable().unique();
+        table.string('name').notNullable();
         table.string('description').notNullable();
         table
-            .string('region_id')
+            .integer('region_id')
             .notNullable()
             .references('id')
             .inTable('regions')

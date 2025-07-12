@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateDistrictDto {
     @ApiProperty({
@@ -22,7 +22,7 @@ export class CreateDistrictDto {
         example: '1',
         description: 'ID of the region this district belongs to',
     })
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    region_id: string;
+    region_id: number;
 }
