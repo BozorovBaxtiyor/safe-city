@@ -45,3 +45,22 @@ export interface IDistrict {
     created_at?: Date;
     updated_at?: Date;
 }
+
+export interface IProject {
+    id: number;
+    name: string;
+    description?: string;
+    created_by: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+export interface IOrder {
+    id: number;
+    order_number: string;
+    description?: string;
+    project_id: number;
+    created_by: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
