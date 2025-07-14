@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { AreaModule } from './modules/v1/area/area.module';
 import { AuthModule } from './modules/v1/auth/auth.module';
 import { JwtAuthModule } from './modules/v1/auth/jwt-auth.module';
+import { DescriptionsModule } from './modules/v1/descriptions/des.module';
 import { ProjectModule } from './modules/v1/projects/project.module';
 
 @Module({
@@ -16,7 +17,8 @@ import { ProjectModule } from './modules/v1/projects/project.module';
         DatabaseModule,
         AuthModule,
         AreaModule,
-        ProjectModule
+        ProjectModule,
+        DescriptionsModule,
     ],
 })
 export class AppModule {}

@@ -64,3 +64,22 @@ export interface IOrder {
     created_at?: Date;
     updated_at?: Date;
 }
+
+export interface IDescriptonType {
+    id: number
+    name: string
+    description?: string;
+    created_by: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+export interface IDescription {
+    id: number;
+    name: string;
+    description?: string;
+    des_id: number; 
+    created_by: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
