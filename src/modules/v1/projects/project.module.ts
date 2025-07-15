@@ -8,7 +8,8 @@ import { ProjectService } from "./project.service";
 @Module({
     imports: [DatabaseModule, JwtAuthModule],
     controllers: [ProjectController],
-    providers: [ProjectRepository , ProjectService],
+    providers: [ProjectRepository, ProjectService],
+    exports: [ProjectRepository],
 })
 
 export class ProjectModule {}

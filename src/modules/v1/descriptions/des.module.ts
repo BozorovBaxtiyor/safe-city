@@ -8,7 +8,8 @@ import { DescriptionsService } from "./des.service";
 @Module({
     imports: [JwtAuthModule , DatabaseModule],
     controllers: [DescriptionsController],
-    providers: [DescriptionsRepository , DescriptionsService]
+    providers: [DescriptionsRepository, DescriptionsService],
+    exports: [DescriptionsRepository]
 })
 
 export class DescriptionsModule {}

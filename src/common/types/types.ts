@@ -41,7 +41,7 @@ export interface IDistrict {
     id: number;
     name: string;
     description: string;
-    region_id: string;
+    region_id: number;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -95,6 +95,27 @@ export interface IDeviceModel {
     name: string;
     description?: string;
     device_type_id: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+export interface IObject {
+    id: number;
+    project_id: number;
+    order_id: number;
+    des_type_id: number;
+    des_id: number;
+    region_id: number;
+    district_id: number;
+    name: string;
+    address: string;
+    latitude: string;
+    longitude: string;
+    ip_subnet: string;
+    connection_type: string;
+    speed: string;
+    created_by: number;
+    updated_by: number;
     created_at?: Date;
     updated_at?: Date;
 }

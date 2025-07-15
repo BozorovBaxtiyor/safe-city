@@ -32,7 +32,6 @@ async function bootstrap() {
             'Safe City - A comprehensive web API for managing city safety, including user management, incident reporting, and emergency response features.',
         )
         .setVersion('1.0')
-        .addTag('Safe City Web API')
         .addBearerAuth()
         .build();
     const webDocument = SwaggerModule.createDocument(app, webConfig);

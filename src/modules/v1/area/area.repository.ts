@@ -47,7 +47,7 @@ export class AreaRepository {
         const [district] = await this.knex<IDistrict>('districts')
             .insert({
                 ...createDistrictDto,
-                region_id: createDistrictDto.region_id.toString(),
+                region_id: createDistrictDto.region_id,
             })
             .returning('*');
         return district;

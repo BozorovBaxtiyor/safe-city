@@ -9,6 +9,6 @@ import { JwtAuthModule } from '../auth/jwt-auth.module';
     imports: [DatabaseModule , JwtAuthModule],
     controllers: [AreaController],
     providers: [AreaService, AreaRepository],
-    exports: [AreaService],
+    exports: [AreaRepository],
 })
 export class AreaModule {}
