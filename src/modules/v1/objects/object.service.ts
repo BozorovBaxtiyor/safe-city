@@ -18,52 +18,55 @@ export class ObjectService {
     ) {}
 
     async createObject(dto: CreateObjectDto, userId: number): Promise<{ message: string; id: number }> {
-        // Validate region
-        const validRegion = await this.areaRepository.getRegionById(dto.region_id);
+        const [validRegion, validDistrict, validProject, validOrder, validDesType, validDescription] = await Promise.all([
+            this.areaRepository.getRegionById(dto.region_id),
+            this.areaRepository.getDistrictById(dto.district_id),
+            this.projectRepository.getProjectById(dto.project_id),
+            this.projectRepository.getOrderById(dto.order_id),
+            this.descriptionRepo.getDesById(dto.des_type_id),
+            this.descriptionRepo.getDescriptionById(dto.des_id),
+        ]);
+
+        // Tekshiruvlar
+
         if (!validRegion) {
             throw new NotFoundException(`Region with ID ${dto.region_id} not found`);
         }
-        const validDistrict = await this.areaRepository.getDistrictById(dto.district_id);
+
         if (!validDistrict) {
             throw new NotFoundException(`District with ID ${dto.district_id} not found`);
         }
 
-        // Check if district belongs to the region
         if (validDistrict.region_id !== validRegion.id) {
             throw new BadRequestException(`District with ID ${dto.district_id} does not belong to Region with ID ${dto.region_id}`);
         }
 
-        const validProject = await this.projectRepository.getProjectById(dto.project_id);
         if (!validProject) {
             throw new NotFoundException(`Project with ID ${dto.project_id} not found`);
         }
 
-        const validOrder = await this.projectRepository.getOrderById(dto.order_id);
         if (!validOrder) {
             throw new NotFoundException(`Order with ID ${dto.order_id} not found`);
         }
 
-        // Check if order belongs to the project
         if (validOrder.project_id !== validProject.id) {
             throw new BadRequestException(`Order with ID ${dto.order_id} does not belong to Project with ID ${dto.project_id}`);
         }
 
-        const validDesType = await this.descriptionRepo.getDesById(dto.des_type_id);
         if (!validDesType) {
             throw new NotFoundException(`Description type with ID ${dto.des_type_id} not found`);
         }
 
-        const validDescription = await this.descriptionRepo.getDescriptionById(dto.des_id);
         if (!validDescription) {
             throw new NotFoundException(`Description with ID ${dto.des_id} not found`);
         }
 
-        // Check if description type matches the description
         if (validDesType.id !== validDescription.des_id) {
             throw new BadRequestException(`Description with ID ${dto.des_id} does not match Description type with ID ${dto.des_type_id}`);
         }
 
         const newObjectId = await this.objectRepository.create(dto, userId);
+
         return { message: 'Object created successfully', id: newObjectId };
     }
 
@@ -91,10 +94,11 @@ export class ObjectService {
             throw new NotFoundException(`Object with ID ${id} not found`);
         }
 
-        // Validate all dto fields
-        await this.validateRegionAndDistrict(dto.region_id, dto.district_id, object.region_id);
-        await this.validateProjectAndOrder(dto.project_id, dto.order_id, object.project_id);
-        await this.validateDescription(dto.des_type_id, dto.des_id, object.des_type_id);
+        await Promise.all([
+            this.validateRegionAndDistrict(dto.region_id, dto.district_id, object.region_id),
+            this.validateProjectAndOrder(dto.project_id, dto.order_id, object.project_id),
+            this.validateDescription(dto.des_type_id, dto.des_id, object.des_type_id),
+        ]);
 
         await this.objectRepository.update(id, dto, userId);
     }
@@ -114,20 +118,31 @@ export class ObjectService {
         districtId: number | undefined,
         existingRegionId?: number,
     ): Promise<void> {
-        if (regionId) {
-            const region = await this.areaRepository.getRegionById(regionId);
-            if (!region) {
-                throw new NotFoundException(`Region with ID ${regionId} not found`);
-            }
+        let region: any;
+        let district: any;
+
+        if (regionId && districtId) {
+            [region, district] = await Promise.all([
+                this.areaRepository.getRegionById(regionId),
+                this.areaRepository.getDistrictById(districtId),
+            ]);
+        } else if (regionId) {
+            region = await this.areaRepository.getRegionById(regionId);
+        } else if (districtId) {
+            district = await this.areaRepository.getDistrictById(districtId);
+        }
+
+        if (regionId && !region) {
+            throw new NotFoundException(`Region with ID ${regionId} not found`);
+        }
+        if (districtId && !district) {
+            throw new NotFoundException(`District with ID ${districtId} not found`);
         }
 
         if (districtId) {
-            const district = await this.areaRepository.getDistrictById(districtId);
-            if (!district) {
-                throw new NotFoundException(`District with ID ${districtId} not found`);
-            }
-            if (district.region_id !== regionId || (existingRegionId && district.region_id !== existingRegionId)) {
-                throw new BadRequestException(`District with ID ${districtId} does not belong to Region with ID ${regionId}`);
+            const compareRegionId = regionId || existingRegionId;
+            if (district.region_id !== compareRegionId) {
+                throw new BadRequestException(`District with ID ${districtId} does not belong to Region with ID ${compareRegionId}`);
             }
         }
     }
@@ -137,39 +152,61 @@ export class ObjectService {
         orderId: number | undefined,
         existingProjectId?: number,
     ): Promise<void> {
-        if (projectId) {
-            const project = await this.projectRepository.getProjectById(projectId);
-            if (!project) {
-                throw new NotFoundException(`Project with ID ${projectId} not found`);
-            }
+        let project: any;
+        let order: any;
+
+        if (projectId && orderId) {
+            [project, order] = await Promise.all([
+                this.projectRepository.getProjectById(projectId),
+                this.projectRepository.getOrderById(orderId),
+            ]);
+        } else if (projectId) {
+            project = await this.projectRepository.getProjectById(projectId);
+        } else if (orderId) {
+            order = await this.projectRepository.getOrderById(orderId);
+        }
+
+        if (projectId && !project) {
+            throw new NotFoundException(`Project with ID ${projectId} not found`);
+        }
+        if (orderId && !order) {
+            throw new NotFoundException(`Order with ID ${orderId} not found`);
         }
 
         if (orderId) {
-            const order = await this.projectRepository.getOrderById(orderId);
-            if (!order) {
-                throw new NotFoundException(`Order with ID ${orderId} not found`);
-            }
-            if (order.project_id !== projectId || (existingProjectId && order.project_id !== existingProjectId)) {
-                throw new BadRequestException(`Order with ID ${orderId} does not belong to Project with ID ${projectId}`);
+            const compareProjectId = projectId || existingProjectId;
+            if (order.project_id !== compareProjectId) {
+                throw new BadRequestException(`Order with ID ${orderId} does not belong to Project with ID ${compareProjectId}`);
             }
         }
     }
 
     private async validateDescription(desTypeId: number | undefined, desId: number | undefined, existingDesTypeId?: number): Promise<void> {
-        if (desTypeId) {
-            const desType = await this.descriptionRepo.getDesById(desTypeId);
-            if (!desType) {
-                throw new NotFoundException(`Description type with ID ${desTypeId} not found`);
-            }
+        let desType: any;
+        let description: any;
+
+        if (desTypeId && desId) {
+            [desType, description] = await Promise.all([
+                this.descriptionRepo.getDesById(desTypeId),
+                this.descriptionRepo.getDescriptionById(desId),
+            ]);
+        } else if (desTypeId) {
+            desType = await this.descriptionRepo.getDesById(desTypeId);
+        } else if (desId) {
+            description = await this.descriptionRepo.getDescriptionById(desId);
+        }
+
+        if (desTypeId && !desType) {
+            throw new NotFoundException(`Description type with ID ${desTypeId} not found`);
+        }
+        if (desId && !description) {
+            throw new NotFoundException(`Description with ID ${desId} not found`);
         }
 
         if (desId) {
-            const description = await this.descriptionRepo.getDescriptionById(desId);
-            if (!description) {
-                throw new NotFoundException(`Description with ID ${desId} not found`);
-            }
-            if (description.des_id !== desTypeId || (existingDesTypeId && description.des_id !== existingDesTypeId)) {
-                throw new BadRequestException(`Description with ID ${desId} does not match Description type with ID ${desTypeId}`);
+            const compareDesTypeId = desTypeId || existingDesTypeId;
+            if (description.des_id !== compareDesTypeId) {
+                throw new BadRequestException(`Description with ID ${desId} does not match Description type with ID ${compareDesTypeId}`);
             }
         }
     }
