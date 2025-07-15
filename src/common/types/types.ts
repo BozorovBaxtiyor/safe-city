@@ -83,3 +83,18 @@ export interface IDescription {
     created_at?: Date;
     updated_at?: Date;
 }
+
+export interface IDeviceType { 
+    id: number;
+    name: string;
+
+}
+
+export interface IDeviceModel {
+    id: number;
+    name: string;
+    description?: string;
+    device_type_id: number;
+    created_at?: Date;
+    updated_at?: Date;
+}

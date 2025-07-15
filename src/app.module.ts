@@ -6,6 +6,8 @@ import { AuthModule } from './modules/v1/auth/auth.module';
 import { JwtAuthModule } from './modules/v1/auth/jwt-auth.module';
 import { DescriptionsModule } from './modules/v1/descriptions/des.module';
 import { ProjectModule } from './modules/v1/projects/project.module';
+import { DeviceModule } from './modules/v1/device/device.module';
+import { ObjectModule } from './modules/v1/objects/object.module';
 
 @Module({
     imports: [
@@ -19,6 +21,8 @@ import { ProjectModule } from './modules/v1/projects/project.module';
         AreaModule,
         ProjectModule,
         DescriptionsModule,
+        DeviceModule,
+        ObjectModule
     ],
 })
 export class AppModule {}
