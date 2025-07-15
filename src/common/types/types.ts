@@ -5,7 +5,7 @@ export interface IUser {
     fullname: string;
     password: string;
     roll: 'developer' | 'chef' | 'lead' | 'senior' | 'superadmin' | 'admin' | 'user';
-    region: string;
+    region_id: number;
     avatar?: string | null;
     created_at?: Date;
     updated_at?: Date;
@@ -116,6 +116,21 @@ export interface IObject {
     speed: string;
     created_by: number;
     updated_by: number;
+    created_at?: Date;
+    updated_at?: Date;
+}
+
+export interface IDevice {
+    id: number;
+    object_id: number;
+    device_model_id: number;
+    device_type_id: number;
+    created_by: number;
+    serial_number: string;
+    ip_address: string;
+    mac_address: string;
+    status: 'active' | 'inactive' | 'maintenance';
+    extra_info?: Record<string, any> | null;
     created_at?: Date;
     updated_at?: Date;
 }

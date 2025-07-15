@@ -1,17 +1,5 @@
 // auth.controller.ts
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Post,
-    Put,
-    Query,
-    Req,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
@@ -38,10 +26,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateProfileDto } from './dto/update.dto';
 import { ValidateOtpDto } from './dto/validate-otp.dto';
-import {
-    ForgotPasswordResponseEntity,
-    ValidateOtpResponseEntity,
-} from './entity/forgot-password.entity';
+import { ForgotPasswordResponseEntity, ValidateOtpResponseEntity } from './entity/forgot-password.entity';
 import { GetAllUsersOutput } from './entity/get-allUsers.output';
 import { LoginEntity } from './entity/login.output';
 import { RegisterEntity } from './entity/register.output';
@@ -104,21 +89,14 @@ export class AuthController {
     }
 
     @Delete('delete-user/:id')
-    async deleteUser(
-        @Query('id') id: number,
-        @Req() req: ICustomRequest,
-    ): Promise<{ status: string; message: string }> {
+    async deleteUser(@Query('id') id: number, @Req() req: ICustomRequest): Promise<{ status: string; message: string }> {
         return this.authService.deleteUser(id, req.user?.id);
     }
 
     @Put('reset-password')
     @ApiBody({ type: ResetPasswordDto })
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-        return this.authService.resetPassword(
-            resetPasswordDto.userId,
-            resetPasswordDto.currentPassword,
-            resetPasswordDto.newPassword,
-        );
+        return this.authService.resetPassword(resetPasswordDto.userId, resetPasswordDto.currentPassword, resetPasswordDto.newPassword);
     }
 
     @Post('refresh-token')
@@ -132,9 +110,7 @@ export class AuthController {
     @Public()
     @ApiBody({ type: ForgotPasswordDto })
     @ApiOkResponse('OTP sent successfully', ForgotPasswordResponseEntity)
-    async forgotPassword(
-        @Body() forgotPasswordDto: ForgotPasswordDto,
-    ): Promise<ForgotPasswordResponseEntity> {
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ForgotPasswordResponseEntity> {
         return this.authService.forgotPassword(forgotPasswordDto);
     }
 

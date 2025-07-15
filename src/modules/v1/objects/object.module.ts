@@ -12,5 +12,6 @@ import { ObjectService } from './object.service';
     imports: [DatabaseModule, AuthModule, ProjectModule, AreaModule, DescriptionsModule],
     providers: [ObjectRepository, ObjectService],
     controllers: [ObjectController],
+    exports: [ObjectService, ObjectRepository],
 })
 export class ObjectModule {}

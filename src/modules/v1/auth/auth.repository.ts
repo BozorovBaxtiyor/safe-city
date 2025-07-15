@@ -46,7 +46,7 @@ export class AuthRepository {
             email: registerDto.email,
             password: hashedPassword,
             fullname: registerDto.fullName,
-            region: registerDto.region,
+            region_id: registerDto.region_id,
             roll: 'user',
         }); 
     }

@@ -7,11 +7,15 @@ import { DeviceModelRepository } from './repository/device_model.repository';
 import { DeviceTypeRepository } from './repository/device_type.repository';
 import { DeviceModelService } from './services/device_model.service';
 import { DeviceTypeService } from './services/device_type.service';
+import { ObjectModule } from '../objects/object.module';
+import { DeviceController } from './controllers/device.controller';
+import { DeviceService } from './services/device.service';
+import { DeviceRepository } from './repository/device_repository';
 
 @Module({
-    imports: [AuthModule, DatabaseModule],
-    providers: [DeviceTypeRepository, DeviceTypeService, DeviceModelRepository, DeviceModelService],
+    imports: [AuthModule, DatabaseModule , ObjectModule],
+    providers: [DeviceTypeRepository, DeviceTypeService, DeviceModelRepository, DeviceModelService , DeviceService , DeviceRepository],
     exports: [],
-    controllers: [DeviceTypeController, DeviceModelController],
+    controllers: [DeviceTypeController, DeviceModelController , DeviceController],
 })
 export class DeviceModule {}
