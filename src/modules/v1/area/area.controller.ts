@@ -49,10 +49,7 @@ export class AreaController {
     @Put('region/:id')
     @Role(UserRole.SUPERADMIN)
     @ApiParam({ name: 'id', type: 'number' })
-    async updateRegion(
-        @Param('id') id: number,
-        @Body() updateData: Partial<IRegion>,
-    ): Promise<IRegion> {
+    async updateRegion(@Param('id') id: number, @Body() updateData: Partial<IRegion>): Promise<IRegion> {
         return this.areaService.updateRegion(id, updateData);
     }
 
@@ -86,17 +83,14 @@ export class AreaController {
 
     @Get('region/:regionId/districts')
     @ApiParam({ name: 'regionId', type: 'string' })
-    async getDistrictsByRegionId(@Param('regionId') regionId: string): Promise<IDistrict[]> {
+    async getDistrictsByRegionId(@Param('regionId') regionId: string): Promise<{ message: string; data: Partial<IDistrict>[] }> {
         return this.areaService.getDistrictsByRegionId(regionId);
     }
 
     @Put('district/:id')
     @Role(UserRole.SUPERADMIN)
     @ApiParam({ name: 'id', type: 'number' })
-    async updateDistrict(
-        @Param('id') id: number,
-        @Body() updateData: Partial<IDistrict>,
-    ): Promise<IDistrict> {
+    async updateDistrict(@Param('id') id: number, @Body() updateData: Partial<IDistrict>): Promise<IDistrict> {
         return this.areaService.updateDistrict(id, updateData);
     }
 

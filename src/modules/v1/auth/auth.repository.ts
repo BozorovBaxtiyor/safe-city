@@ -16,7 +16,7 @@ export class AuthRepository {
         return this.knex<IUser>('users').where({ username }).first();
     }
 
-    async   findUserById(userId: number): Promise<IUser | undefined> {
+    async findUserById(userId: number): Promise<IUser | undefined> {
         return this.knex<IUser>('users').where('id', userId).first();
     }
 
@@ -48,7 +48,7 @@ export class AuthRepository {
             fullname: registerDto.fullName,
             region_id: registerDto.region_id,
             roll: 'user',
-        }); 
+        });
     }
 
     async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
@@ -102,9 +102,10 @@ export class AuthRepository {
         const limit = query.limit ?? 10;
         const skip = (page - 1) * limit;
         return this.knex<IUser>('users')
-            .whereNot('roll', 'superadmin') 
+            .whereNot('roll', 'superadmin')
             .select('id', 'fullname', 'email', 'username', 'roll')
             .limit(limit)
-            .offset(skip);
+            .offset(skip)
+            .orderBy('id', 'desc');
     }
 }

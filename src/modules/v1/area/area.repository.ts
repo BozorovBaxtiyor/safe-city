@@ -57,8 +57,13 @@ export class AreaRepository {
         return this.knex<IDistrict>('districts').where('region_id', regionId).select('*').orderBy('name');
     }
 
-    async getDistrictsByRegionId(regionId: string): Promise<IDistrict[]> {
-        return this.knex<IDistrict>('districts').where('region_id', regionId).orderBy('name');
+    async getDistrictsByRegionId(
+        regionId: string,
+    ): Promise<Pick<IDistrict, 'id' | 'name' | 'description' | 'created_at' | 'updated_at'>[]> {
+        return this.knex<IDistrict>('districts')
+            .where('region_id', regionId)
+            .select('id', 'name', 'description', 'created_at', 'updated_at')
+            .orderBy('name');
     }
 
     async getDistrictById(id: number): Promise<IDistrict> {

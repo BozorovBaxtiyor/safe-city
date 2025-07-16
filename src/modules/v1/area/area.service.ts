@@ -15,16 +15,13 @@ export class AreaService {
         } catch (error) {
             if (error.code === '23505') {
                 // Unique violation
-                throw new HttpException(
-                    'Region with this name already exists',
-                    HttpStatus.CONFLICT,
-                );
+                throw new HttpException('Region with this name already exists', HttpStatus.CONFLICT);
             }
             throw new HttpException('Failed to create region', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    async getAllRegions(): Promise<{regions:IRegion[]}> {
+    async getAllRegions(): Promise<{ regions: IRegion[] }> {
         try {
             const regions = await this.areaRepository.getAllRegions();
             return { regions };
@@ -50,10 +47,7 @@ export class AreaService {
             return region;
         } catch (error) {
             if (error.code === '23505') {
-                throw new HttpException(
-                    'Region with this name already exists',
-                    HttpStatus.CONFLICT,
-                );
+                throw new HttpException('Region with this name already exists', HttpStatus.CONFLICT);
             }
             throw error;
         }
@@ -72,28 +66,23 @@ export class AreaService {
     async createDistrict(createDistrictDto: CreateDistrictDto): Promise<IDistrict> {
         try {
             // Check if region exists
-            const region = await this.areaRepository.getRegionById(
-                Number(createDistrictDto.region_id),
-            );
+            const region = await this.areaRepository.getRegionById(Number(createDistrictDto.region_id));
             if (!region) {
                 throw new HttpException('Region not found', HttpStatus.NOT_FOUND);
             }
             return await this.areaRepository.createDistrict(createDistrictDto);
         } catch (error) {
             if (error.code === '23505') {
-                throw new HttpException(
-                    'District with this name already exists',
-                    HttpStatus.CONFLICT,
-                );
+                throw new HttpException('District with this name already exists', HttpStatus.CONFLICT);
             }
             throw error;
         }
     }
 
-    async getAllDistricts(regionId: number): Promise<{data: IDistrict[]}> {
+    async getAllDistricts(regionId: number): Promise<{ data: IDistrict[] }> {
         try {
             const districts = await this.areaRepository.getAllDistricts(regionId);
-            return {data: districts};
+            return { data: districts };
         } catch (error) {
             throw new HttpException('Failed to fetch districts', HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -107,20 +96,22 @@ export class AreaService {
         return district;
     }
 
-    async getDistrictsByRegionId(regionId: string): Promise<IDistrict[]> {
+    async getDistrictsByRegionId(regionId: string): Promise<{ message: string; data: Partial<IDistrict>[] }> {
         const region = await this.areaRepository.getRegionById(Number(regionId));
         if (!region) {
             throw new HttpException('Region not found', HttpStatus.NOT_FOUND);
         }
-        return await this.areaRepository.getDistrictsByRegionId(regionId);
+        const districts = await this.areaRepository.getDistrictsByRegionId(regionId);
+        return {
+            message: 'Districts retrieved successfully',
+            data: districts,
+        }
     }
 
     async updateDistrict(id: number, updateData: Partial<IDistrict>): Promise<IDistrict> {
         try {
             if (updateData.region_id) {
-                const region = await this.areaRepository.getRegionById(
-                    Number(updateData.region_id),
-                );
+                const region = await this.areaRepository.getRegionById(Number(updateData.region_id));
                 if (!region) {
                     throw new HttpException('Region not found', HttpStatus.NOT_FOUND);
                 }
@@ -133,10 +124,7 @@ export class AreaService {
             return district;
         } catch (error) {
             if (error.code === '23505') {
-                throw new HttpException(
-                    'District with this name already exists',
-                    HttpStatus.CONFLICT,
-                );
+                throw new HttpException('District with this name already exists', HttpStatus.CONFLICT);
             }
             throw error;
         }
