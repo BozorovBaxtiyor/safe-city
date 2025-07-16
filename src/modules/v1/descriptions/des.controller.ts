@@ -104,8 +104,8 @@ export class DescriptionsController {
     @ApiOkResponse('Description retrieved successfully')
     @ApiNotFoundResponse('Description not found')
     @ApiParam({ name: 'id', type: Number, description: 'ID of the description type' })
-    async getDescriptionByDesTypeId(@Param('id') id: number): Promise<{ message: string; data: IDescription }> {
-        return this.descriptionsService.getDescriptionById(id);
+    async getDescriptionByDesTypeId(@Param('id') id: number): Promise<{ message: string; data: IDescription[] }> {
+        return this.descriptionsService.getDescriptionByDesTypeId(id);
     }
 
     @Put('update-description/:id')
